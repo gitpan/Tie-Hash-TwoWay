@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..8\n"; }
+BEGIN { $| = 1; print "1..9\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Tie::Hash::TwoWay;
 $loaded = 1;
@@ -27,6 +27,7 @@ my %list = (
 
 $hash{one} = $list{one};
 $hash{two} = $list{two};
+$hash{single} = 'scalar';
 
 print "not " unless exists $hash{1};
 print "ok 2\n";
@@ -36,18 +37,20 @@ print "not " unless exists $hash{2}->{two};
 print "ok 4\n";
 print "not " unless exists $hash{one}->{3};
 print "ok 5\n";
-
+print "not " unless exists $hash{scalar};
+print "ok 6\n";
 delete $hash{one};
 
 print "not " if exists $hash{1};
-print "ok 6\n";
-print "not " if exists $hash{2}->{one};
 print "ok 7\n";
+print "not " if exists $hash{2}->{one};
+print "ok 8\n";
 
 # this should clear the whole hash
 delete $hash{2};
 delete $hash{4};
 delete $hash{5};
+delete $hash{'scalar'};
 
 print "not " if scalar keys %hash;
-print "ok 8\n";
+print "ok 9\n";

@@ -11,7 +11,6 @@
 #   This script is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-# $Id: TwoWay.pm,v 1.6 2001/11/10 01:05:01 tzz Exp $
 
 package Tie::Hash::TwoWay;
 
@@ -24,17 +23,24 @@ use Carp;
 use constant PRIMARY   => 0;
 use constant SECONDARY => 1;
 
-$VERSION = sprintf "%d.%02d", '$Revision: 1.6 $ ' =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%02d", '$Revision 1.7 $' =~ /(\d+)\.(\d+)/;
 @ISA = qw(Tie::StdHash);
 
 # Preloaded methods go here.
 
 sub STORE
 {
- my ($self, $key, $val_array_ref) = @_;
- 
- croak "Reference $val_array_ref not an array reference"
-  if ref $val_array_ref ne 'ARRAY';		# only array refs can be recognized
+ my ($self, $key, $value) = @_;
+ my $val_array_ref;
+
+ if (ref $value eq 'ARRAY')		# array refs can be recognized
+ {
+  $val_array_ref = $value;
+ }
+ else			# everything else gets converted to array refs
+ {
+  $val_array_ref = [ $value ];
+ }
 
  # add the values in the passed array to the primary and secondary hashes
  foreach my $value (@$val_array_ref)
@@ -176,10 +182,14 @@ Tie::Hash::TwoWay - Perl extension for two-way mapping between two disjoint sets
    $hash{$_} = $list{$_};
   }
 
+  $hash{White} = 'novelist';
+  $hash{White} = 'color';
+
   # these will all print 'yes'
   print 'yes' if exists $hash{scientist};
   print 'yes' if exists $hash{novelist}->{Asimov};
   print 'yes' if exists $hash{novelist}->{King};
+  print 'yes' if exists $hash{novelist}->{White};
   print 'yes' if exists $hash{King}->{novelist};
 
   my @secondary = $hash->secondary_keys();
