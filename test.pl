@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..9\n"; }
+BEGIN { $| = 1; print "1..10\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use Tie::Hash::TwoWay;
 $loaded = 1;
@@ -46,6 +46,11 @@ print "ok 7\n";
 print "not " if exists $hash{2}->{one};
 print "ok 8\n";
 
+# test secondary keys
+my $secondary = scalar %hash;
+print "not " unless scalar keys %$secondary == 4;
+print "ok 9\n";
+
 # this should clear the whole hash
 delete $hash{2};
 delete $hash{4};
@@ -53,4 +58,4 @@ delete $hash{5};
 delete $hash{'scalar'};
 
 print "not " if scalar keys %hash;
-print "ok 9\n";
+print "ok 10\n";

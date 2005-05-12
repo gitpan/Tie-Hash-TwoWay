@@ -3,10 +3,10 @@
 #  are treated as hash keys.
 #
 # AUTHOR
-#   Teodor Zlatanov <tzz@iglou.com>
+#   Teodor Zlatanov <tzz@lifelogs.com>
 #
 # COPYRIGHT
-#   Copyright (C) 2001, Gold Software Systems
+#   Copyright (C) 2001, 2005 Gold Software Systems
 #
 #   This script is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
@@ -23,8 +23,8 @@ use Carp;
 use constant PRIMARY   => 0;
 use constant SECONDARY => 1;
 
-$VERSION = sprintf "%d.%02d", '$Revision 1.7 $' =~ /(\d+)\.(\d+)/;
-@ISA = qw(Tie::StdHash);
+$VERSION = sprintf "%d.%02d", '$Revision 1.8 $' =~ /(\d+)\.(\d+)/;
+@ISA = qw/Tie::StdHash/;
 
 # Preloaded methods go here.
 
@@ -147,14 +147,14 @@ sub NEXTKEY
  return each %{$self->{PRIMARY}};
 }
 
-sub secondary_keys
+sub SCALAR
 {
  my ($self) = @_;
 
  return undef unless (exists $self->{PRIMARY} &&
 		      exists $self->{SECONDARY});
  
- return keys %{$self->{SECONDARY}};
+ return $self->{SECONDARY};
 }
 
 1;
@@ -192,8 +192,9 @@ Tie::Hash::TwoWay - Perl extension for two-way mapping between two disjoint sets
   print 'yes' if exists $hash{novelist}->{White};
   print 'yes' if exists $hash{King}->{novelist};
 
-  my @secondary = $hash->secondary_keys();
-  print "Secondary keys: @secondary\n";
+  my $secondary = scalar %hash;
+  print "Secondary keys: ";
+  print "$_\n" foreach keys %$secondary;
 
 =head1 DESCRIPTION
 
@@ -221,8 +222,8 @@ a key, checking for its existence, and deleting it will go to the
 primary mapping first and then to the secondary.
 
 The keys of the TwoWay hash are the keys of the primary mapping.  The
-keys of the reverse mapping can be obtained witht he secondary_keys()
-method.
+reverse mapping (which is just a hash reference) can be obtained by
+using the scalar operator on the tied hash.
 
 Everything is stored in hashes for faster access, at the expense of
 memory.
@@ -233,7 +234,7 @@ Nothing.
 
 =head1 AUTHOR
 
-Teodor Zlatanov <tzz@iglou.com>
+Teodor Zlatanov <tzz@lifelogs.com>
 
 =head1 SEE ALSO
 
